@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Mi Plan de Entrenamiento</title>
+
+    <!-- PWA Meta Tags -->
+    <meta name="application-name" content="Gym Tracker">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Gym Tracker">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="msapplication-TileColor" content="#4f46e5">
+
+    <!-- Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- iOS Icons -->
+    <link rel="apple-touch-icon" href="icons/icon-152.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="icons/icon-72.png">
+    <link rel="apple-touch-icon" sizes="96x96" href="icons/icon-96.png">
+    <link rel="apple-touch-icon" sizes="128x128" href="icons/icon-128.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="icons/icon-144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" sizes="384x384" href="icons/icon-384.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="icons/icon-512.png">
+
+    <!-- Splash Screens for iOS -->
+    <link rel="apple-touch-startup-image" href="icons/splash-640x1136.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)">
+    <link rel="apple-touch-startup-image" href="icons/splash-750x1334.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)">
+    <link rel="apple-touch-startup-image" href="icons/splash-1242x2208.png" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3)">
+    <link rel="apple-touch-startup-image" href="icons/splash-1125x2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)">
+    <link rel="apple-touch-startup-image" href="icons/splash-1170x2532.png" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)">
+    <link rel="apple-touch-startup-image" href="icons/splash-1284x2778.png" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3)">
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>Plan de Entrenamiento</h1>
+            <p class="subtitle">3 Días/Semana - Golf & Tenis</p>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab active" data-tab="workout">Entrenar</button>
+            <button class="tab" data-tab="calendar">Calendario</button>
+            <button class="tab" data-tab="stats">Estadísticas</button>
+            <button class="tab" data-tab="daily">Rutina Diaria</button>
+        </nav>
+
+        <!-- Workout Tab -->
+        <section id="workout" class="tab-content active">
+            <div class="day-selector">
+                <button class="day-btn active" data-day="1">Día 1<span>Tren Inferior + Core</span></button>
+                <button class="day-btn" data-day="2">Día 2<span>Tren Superior + Escapular</span></button>
+                <button class="day-btn" data-day="3">Día 3<span>Potencia + Resistencia</span></button>
+            </div>
+
+            <div id="workout-content"></div>
+
+            <div class="workout-actions">
+                <button id="start-workout" class="btn-primary">Iniciar Entrenamiento</button>
+                <button id="finish-workout" class="btn-success hidden">Finalizar Entrenamiento</button>
+            </div>
+        </section>
+
+        <!-- Calendar Tab -->
+        <section id="calendar" class="tab-content">
+            <div class="calendar-header">
+                <button id="prev-month" class="nav-btn">&lt;</button>
+                <h2 id="current-month"></h2>
+                <button id="next-month" class="nav-btn">&gt;</button>
+            </div>
+            <div class="week-structure">
+                <h3>Estructura Semanal Recomendada</h3>
+                <ul>
+                    <li><span class="day-label">Lun:</span> Gym (Día 1)</li>
+                    <li><span class="day-label">Mar:</span> Golf (range)</li>
+                    <li><span class="day-label">Mié:</span> Gym (Día 2)</li>
+                    <li><span class="day-label">Jue:</span> Tenis</li>
+                    <li><span class="day-label">Vie:</span> Descanso/Movilidad</li>
+                    <li><span class="day-label">Sáb:</span> Gym (Día 3)</li>
+                    <li><span class="day-label">Dom:</span> Golf (cancha)</li>
+                </ul>
+            </div>
+            <div id="calendar-grid" class="calendar-grid"></div>
+            <div id="day-detail" class="day-detail hidden"></div>
+        </section>
+
+        <!-- Stats Tab -->
+        <section id="stats" class="tab-content">
+            <div class="stats-summary">
+                <div class="stat-card">
+                    <h3>Esta Semana</h3>
+                    <div class="stat-value" id="week-workouts">0/3</div>
+                    <p>Entrenamientos</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Este Mes</h3>
+                    <div class="stat-value" id="month-workouts">0</div>
+                    <p>Entrenamientos</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Cumplimiento</h3>
+                    <div class="stat-value" id="compliance-rate">0%</div>
+                    <p>Este mes</p>
+                </div>
+            </div>
+            <div class="stats-detail">
+                <h3>Historial por Día</h3>
+                <div class="day-stats">
+                    <div class="day-stat">
+                        <span class="day-name">Día 1</span>
+                        <div class="progress-bar">
+                            <div class="progress" id="day1-progress"></div>
+                        </div>
+                        <span class="day-count" id="day1-count">0</span>
+                    </div>
+                    <div class="day-stat">
+                        <span class="day-name">Día 2</span>
+                        <div class="progress-bar">
+                            <div class="progress" id="day2-progress"></div>
+                        </div>
+                        <span class="day-count" id="day2-count">0</span>
+                    </div>
+                    <div class="day-stat">
+                        <span class="day-name">Día 3</span>
+                        <div class="progress-bar">
+                            <div class="progress" id="day3-progress"></div>
+                        </div>
+                        <span class="day-count" id="day3-count">0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="recent-workouts">
+                <h3>Últimos Entrenamientos</h3>
+                <ul id="recent-list"></ul>
+            </div>
+        </section>
+
+        <!-- Daily Routine Tab -->
+        <section id="daily" class="tab-content">
+            <div class="daily-info">
+                <h2>Trabajo Diario Escapular</h2>
+                <p class="daily-subtitle">5 minutos - Incluso días sin gym</p>
+                <div class="daily-exercises">
+                    <div class="daily-exercise">
+                        <input type="checkbox" id="daily-1" class="daily-check">
+                        <label for="daily-1">
+                            <span class="exercise-name">Band pull-aparts</span>
+                            <span class="exercise-sets">2x20</span>
+                        </label>
+                    </div>
+                    <div class="daily-exercise">
+                        <input type="checkbox" id="daily-2" class="daily-check">
+                        <label for="daily-2">
+                            <span class="exercise-name">Retracción escapular</span>
+                            <span class="exercise-sets">2x15</span>
+                        </label>
+                    </div>
+                    <div class="daily-exercise">
+                        <input type="checkbox" id="daily-3" class="daily-check">
+                        <label for="daily-3">
+                            <span class="exercise-name">Rotación externa con banda</span>
+                            <span class="exercise-sets">2x15/lado</span>
+                        </label>
+                    </div>
+                </div>
+                <button id="complete-daily" class="btn-primary">Marcar Rutina Completada</button>
+                <div id="daily-streak" class="streak-info"></div>
+            </div>
+
+            <div class="avoid-section">
+                <h3>Evitar Temporalmente</h3>
+                <ul class="avoid-list">
+                    <li>Press militar pesado</li>
+                    <li>Dominadas (hasta mejorar molestia)</li>
+                    <li>Dips profundos</li>
+                    <li>Ejercicios con hombros por encima de la cabeza con carga</li>
+                </ul>
+            </div>
+        </section>
+    </div>
+
+    <!-- Modal for exercise details -->
+    <div id="exercise-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3 id="modal-title"></h3>
+            <p id="modal-description"></p>
+            <div id="modal-notes"></div>
+        </div>
+    </div>
+
+    <!-- Install prompt for iOS -->
+    <div id="install-prompt" class="install-prompt hidden">
+        <div class="install-content">
+            <span class="close-install">&times;</span>
+            <p><strong>Instalar en iPhone:</strong></p>
+            <p>1. Toca <span class="share-icon">⬆️</span> (Compartir)</p>
+            <p>2. Selecciona "Añadir a pantalla de inicio"</p>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('SW registered:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('SW registration failed:', error);
+                    });
+            });
+        }
+
+        // Show iOS install prompt
+        function isIOS() {
+            return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        }
+
+        function isInStandaloneMode() {
+            return ('standalone' in window.navigator) && (window.navigator.standalone);
+        }
+
+        if (isIOS() && !isInStandaloneMode()) {
+            const hasSeenPrompt = localStorage.getItem('hasSeenInstallPrompt');
+            if (!hasSeenPrompt) {
+                setTimeout(() => {
+                    document.getElementById('install-prompt').classList.remove('hidden');
+                }, 3000);
+            }
+        }
+
+        document.querySelector('.close-install')?.addEventListener('click', () => {
+            document.getElementById('install-prompt').classList.add('hidden');
+            localStorage.setItem('hasSeenInstallPrompt', 'true');
+        });
+    </script>
+</body>
+</html>

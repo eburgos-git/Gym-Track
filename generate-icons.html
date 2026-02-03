@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generador de Iconos PWA</title>
+    <style>
+        body { font-family: system-ui; padding: 20px; background: #f0f0f0; }
+        .icon-grid { display: flex; flex-wrap: wrap; gap: 20px; }
+        .icon-item { background: white; padding: 15px; border-radius: 8px; text-align: center; }
+        canvas { display: block; margin: 0 auto 10px; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; margin: 5px; }
+        .download-all { background: #4f46e5; color: white; border: none; border-radius: 8px; }
+        h1 { color: #333; }
+        .instructions { background: #e0f2fe; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Generador de Iconos PWA</h1>
+    <div class="instructions">
+        <p><strong>Instrucciones:</strong></p>
+        <ol>
+            <li>Haz clic en "Generar Todos los Iconos"</li>
+            <li>Luego haz clic en "Descargar Todos" para obtener un ZIP con todos los iconos</li>
+            <li>Extrae los archivos en la carpeta <code>icons/</code> de tu proyecto</li>
+        </ol>
+    </div>
+    <button onclick="generateAllIcons()" class="download-all">Generar Todos los Iconos</button>
+    <button onclick="downloadAll()" class="download-all">Descargar Todos</button>
+    <div id="icon-grid" class="icon-grid"></div>
+
+    <script>
+        const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+        const splashSizes = [
+            { name: 'splash-640x1136', w: 640, h: 1136 },
+            { name: 'splash-750x1334', w: 750, h: 1334 },
+            { name: 'splash-1242x2208', w: 1242, h: 2208 },
+            { name: 'splash-1125x2436', w: 1125, h: 2436 },
+            { name: 'splash-1170x2532', w: 1170, h: 2532 },
+            { name: 'splash-1284x2778', w: 1284, h: 2778 }
+        ];
+
+        const canvases = {};
+
+        function drawIcon(ctx, size) {
+            // Background gradient
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#4f46e5');
+            gradient.addColorStop(1, '#7c3aed');
+
+            // Rounded rect background
+            const radius = size * 0.1875;
+            ctx.beginPath();
+            ctx.roundRect(0, 0, size, size, radius);
+            ctx.fillStyle = gradient;
+            ctx.fill();
+
+            // Scale factor
+            const s = size / 512;
+
+            ctx.fillStyle = 'white';
+
+            // Left weight - outer
+            roundRect(ctx, 100*s, 180*s, 60*s, 152*s, 12*s);
+            // Left weight - inner
+            roundRect(ctx, 80*s, 210*s, 100*s, 92*s, 8*s);
+            // Bar
+            roundRect(ctx, 160*s, 236*s, 192*s, 40*s, 8*s);
+            // Right weight - outer
+            roundRect(ctx, 352*s, 180*s, 60*s, 152*s, 12*s);
+            // Right weight - inner
+            roundRect(ctx, 332*s, 210*s, 100*s, 92*s, 8*s);
+
+            // Check circle
+            ctx.beginPath();
+            ctx.arc(400*s, 120*s, 56*s, 0, Math.PI * 2);
+            ctx.fillStyle = '#10b981';
+            ctx.fill();
+
+            // Check mark
+            ctx.beginPath();
+            ctx.moveTo(370*s, 120*s);
+            ctx.lineTo(390*s, 140*s);
+            ctx.lineTo(430*s, 100*s);
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 12*s;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.stroke();
+        }
+
+        function roundRect(ctx, x, y, w, h, r) {
+            ctx.beginPath();
+            ctx.roundRect(x, y, w, h, r);
+            ctx.fill();
+        }
+
+        function drawSplash(ctx, w, h) {
+            // Background
+            const gradient = ctx.createLinearGradient(0, 0, w, h);
+            gradient.addColorStop(0, '#4f46e5');
+            gradient.addColorStop(1, '#7c3aed');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, w, h);
+
+            // Draw icon in center
+            const iconSize = Math.min(w, h) * 0.3;
+            const iconX = (w - iconSize) / 2;
+            const iconY = (h - iconSize) / 2 - h * 0.1;
+
+            ctx.save();
+            ctx.translate(iconX, iconY);
+
+            const s = iconSize / 512;
+            ctx.fillStyle = 'rgba(255,255,255,0.2)';
+
+            // Left weight
+            roundRect(ctx, 100*s, 180*s, 60*s, 152*s, 12*s);
+            roundRect(ctx, 80*s, 210*s, 100*s, 92*s, 8*s);
+            // Bar
+            roundRect(ctx, 160*s, 236*s, 192*s, 40*s, 8*s);
+            // Right weight
+            roundRect(ctx, 352*s, 180*s, 60*s, 152*s, 12*s);
+            roundRect(ctx, 332*s, 210*s, 100*s, 92*s, 8*s);
+
+            ctx.restore();
+
+            // Text
+            ctx.fillStyle = 'white';
+            ctx.font = `bold ${w * 0.05}px system-ui`;
+            ctx.textAlign = 'center';
+            ctx.fillText('Gym Tracker', w/2, iconY + iconSize + h * 0.1);
+        }
+
+        function generateAllIcons() {
+            const grid = document.getElementById('icon-grid');
+            grid.innerHTML = '';
+
+            // Generate app icons
+            sizes.forEach(size => {
+                const item = document.createElement('div');
+                item.className = 'icon-item';
+
+                const canvas = document.createElement('canvas');
+                canvas.width = size;
+                canvas.height = size;
+                const ctx = canvas.getContext('2d');
+                drawIcon(ctx, size);
+
+                canvases[`icon-${size}.png`] = canvas;
+
+                item.innerHTML = `<p>icon-${size}.png</p>`;
+                item.insertBefore(canvas, item.firstChild);
+
+                const btn = document.createElement('button');
+                btn.textContent = 'Descargar';
+                btn.onclick = () => downloadCanvas(canvas, `icon-${size}.png`);
+                item.appendChild(btn);
+
+                grid.appendChild(item);
+            });
+
+            // Generate splash screens
+            splashSizes.forEach(({name, w, h}) => {
+                const item = document.createElement('div');
+                item.className = 'icon-item';
+
+                const canvas = document.createElement('canvas');
+                canvas.width = w;
+                canvas.height = h;
+                canvas.style.width = '100px';
+                canvas.style.height = `${100 * h / w}px`;
+
+                const ctx = canvas.getContext('2d');
+                drawSplash(ctx, w, h);
+
+                canvases[`${name}.png`] = canvas;
+
+                item.innerHTML = `<p>${name}.png</p>`;
+                item.insertBefore(canvas, item.firstChild);
+
+                const btn = document.createElement('button');
+                btn.textContent = 'Descargar';
+                btn.onclick = () => downloadCanvas(canvas, `${name}.png`);
+                item.appendChild(btn);
+
+                grid.appendChild(item);
+            });
+        }
+
+        function downloadCanvas(canvas, filename) {
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        async function downloadAll() {
+            for (const [filename, canvas] of Object.entries(canvases)) {
+                downloadCanvas(canvas, filename);
+                await new Promise(r => setTimeout(r, 100));
+            }
+        }
+
+        // Auto-generate on load
+        window.onload = generateAllIcons;
+    </script>
+</body>
+</html>
