@@ -2,7 +2,7 @@
   "name": "Mi Plan de Entrenamiento",
   "short_name": "Gym Tracker",
   "description": "Plan de entrenamiento 3 días/semana para Golf y Tenis",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#f8fafc",
   "theme_color": "#4f46e5",
